@@ -1,0 +1,83 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2018.03.30.06.25.49;	author anmolzehra;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.29.12.25.15;	author anmolzehra;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include"ioctl.h"
+#include<sys/ioctl.h>
+int main()
+{
+	int choice;
+	int fd;
+	fd = open("/home/anmolzehra/Projects/drivers/Testdriver_ioctl/Mydev",O_WRONLY);
+	if(!fd)
+	{
+		perror("File descriptor couldn't be assigned\n");
+		exit(EXIT_FAILURE);
+	}
+	else
+		printf("fd = %d\n",fd);
+	printf("1 -> DEVRESET\n");
+	printf("0 -> EXIT \n");
+	scanf("%d",&choice);
+	switch(choice)
+	{
+		case 1: 
+			printf("Choosing IOCTL\n");
+			ioctl(fd,DEVRESET,1);
+			break;
+		case 0: 
+			exit(EXIT_SUCCESS);
+			
+	}
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 2
+a11 1
+	int fd = open("Mydev",O_WRONLY);
+d14 1
+a14 1
+		printf("No File Discriptor assigned for DD module\n");
+d19 1
+a19 1
+	printf("1 -> Reset the device configuration\n");
+d24 2
+a25 1
+		case 1: printf("Choosing IOCTL\n");
+d29 2
+a30 1
+			exit("EXIT_SUCCESS");
+@

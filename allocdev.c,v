@@ -1,0 +1,392 @@
+head	1.10;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	2018.03.18.11.31.34;	author anmolzehra;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2018.03.18.11.11.44;	author anmolzehra;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2018.03.17.07.16.16;	author anmolzehra;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.03.17.05.54.20;	author anmolzehra;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.03.17.05.50.43;	author anmolzehra;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.03.17.05.09.52;	author anmolzehra;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.03.16.12.49.59;	author anmolzehra;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.03.16.12.06.44;	author anmolzehra;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.03.10.08.00.47;	author anmolzehra;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.09.16.17.48;	author anmolzehra;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@*** empty log message ***
+@
+text
+@#include"header.h"
+#include"declarations.h"
+int noi,noq,i,j,k;
+Qset *qset;
+Qset *first;
+Qset * allocdev(int fsize,loff_t offset)
+{
+	int t_size,write_beg_i,write_beg_qs,write_beg_q,quantum;
+	t_size=fsize+offset;
+#ifdef DEBUG
+	printk(KERN_ALERT "Allocdev Begins\n");
+#endif
+#ifdef DEBUG
+	printk(KERN_INFO "fsize:%d\n",fsize);
+#endif
+	noi=t_size/(noofreg*regsize);
+	if(t_size%(noofreg*regsize)!=0)
+	{
+		noi++;
+	}
+#ifdef DEBUG
+	printk(KERN_INFO "noi:%d\n",noi);
+#endif
+	write_beg_i=offset/(noofreg*regsize);
+	if(offset%(noofreg*regsize)!=0)
+	{
+		write_beg_i++;
+	}
+#ifdef DEBUG
+	printk(KERN_INFO "write_beg_i:%d\n",write_beg_i);
+#endif
+	write_beg_qs=offset/regsize;
+#ifdef DEBUG
+	printk(KERN_INFO "write_beg_qs:%d\n",write_beg_qs);
+#endif
+	write_beg_q=offset%regsize;
+#ifdef DEBUG
+	printk(KERN_INFO "write_beg_q:%d\n",write_beg_q);
+#endif
+	noq=fsize/(regsize);
+	if(fsize%(regsize)!=0)
+	{
+		noq++;
+	}
+#ifdef DEBUG
+	printk(KERN_INFO "noq:%d\n",noq);
+#endif
+	for(i=0;i<noi;i++)
+	{
+		if(i==0)
+		{
+			first=(Qset *)kmalloc(sizeof(Qset),GFP_KERNEL);
+			qset=first;
+			if(!first)
+			{
+#ifdef DEBUG
+				printk(KERN_ERR "ldev->first ERROR\n");
+#endif
+				return (Qset *)-1;
+			}
+			memset(first,'\0',sizeof(Qset));
+		}
+		else
+		{
+			qset->next=(Qset*)kmalloc(sizeof(Qset),GFP_KERNEL);	
+			if(!qset->next)
+			{
+#ifdef DEBUG
+				printk(KERN_ERR "qset ERROR\n");
+#endif
+				return (Qset *)-1;
+			}
+			memset(qset->next,'\0',sizeof(Qset));	
+			qset=qset->next;
+			//		else
+			//		{
+			//		qset->next= NULL;
+			//		}
+		}
+
+	}
+	if(write_beg_i > 0)
+	{
+	for(k=0;k<write_beg_i;k++)
+	{
+		if(k==0)
+		{
+			qset=first;
+		}
+		else
+		{
+			qset=qset->next;	
+		}
+	}
+	k--;
+	quantum=(write_beg_qs+1)%noofreg;
+	}
+	else
+	{
+		qset=first;
+		k=0;
+		quantum=1;
+	}
+	for(i=k;i<noi;i++)
+	{
+		qset->data =(void**)kmalloc(sizeof(char *)*(noofreg),GFP_KERNEL);
+		if(!qset->data)
+		{
+#ifdef DEBUG
+			printk(KERN_ERR "qset->next ERROR\n");
+#endif
+			return (Qset *)-1;
+		}
+		memset(qset->data,'\0',sizeof(char *)*(noofreg));	
+#ifdef DEBUG
+		printk(KERN_INFO "write_beg_qs:%d\n",write_beg_qs);
+#endif
+		for(j=quantum-1;j<noofreg;j++)
+		{
+			qset->data[j] = (void*)kmalloc(sizeof(char)*(regsize-write_beg_q),GFP_KERNEL);
+			noq--;
+#ifdef DEBUG
+	printk(KERN_INFO "noq:%d\n",noq);
+#endif
+			if(noq==0)
+				break;
+			memset(qset->data[j],'\0',sizeof(char)*regsize);	
+		write_beg_q=0;
+		}
+		quantum=1;;
+		qset=qset->next;
+	}
+
+#ifdef DEBUG
+	printk(KERN_ALERT "Allocdev Ends\n");
+#endif
+	return first;
+}
+@
+
+
+1.9
+log
+@Fixed_bug_in_allocdev_due_lseek_Routine_changes.
+@
+text
+@d100 1
+@
+
+
+1.8
+log
+@last for loop modified
+@
+text
+@d82 2
+d97 6
+@
+
+
+1.7
+log
+@noq value printing inside last loop
+@
+text
+@d25 1
+a25 1
+	if(write_beg_i%(noofreg*regsize)!=0)
+d121 1
+a121 1
+		j=0;
+@
+
+
+1.6
+log
+@more improved in terms of quantum set and quntum begining values
+@
+text
+@d112 1
+d114 1
+a114 1
+		printk(KERN_INFO "hello\n");
+a115 1
+			noq--;
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d8 1
+a8 1
+	int t_size,write_beg_i,write_beg_qs,write_beg_q;
+d94 1
+d109 1
+a109 1
+		for(j=write_beg_qs+1;j<noofreg;j++)
+d111 4
+a114 1
+			qset->data[j] = (void*)kmalloc(sizeof(char)*regsize,GFP_KERNEL);
+d119 1
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+int noi,noq,i,j;
+d6 1
+a6 1
+Qset * allocdev(int fsize)
+d8 3
+a10 2
+	//fsize=fsize+	
+	#ifdef DEBUG
+d12 2
+a13 2
+	#endif
+	#ifdef DEBUG
+d15 3
+a17 3
+	#endif
+	noi=fsize/(noofreg*regsize);
+	if(fsize%(noofreg*regsize)!=0)
+d21 1
+a21 1
+	#ifdef DEBUG
+d23 17
+a39 1
+	#endif
+d45 1
+a45 1
+	#ifdef DEBUG
+d47 1
+a47 1
+	#endif
+d56 1
+a56 1
+	#ifdef DEBUG
+d58 1
+a58 1
+	#endif
+d68 1
+a68 1
+	#ifdef DEBUG
+d70 1
+a70 1
+	#endif
+d74 1
+a74 1
+				qset=qset->next;
+d82 13
+a94 2
+	qset=first;
+	for(i=0;i<noi;i++)
+d99 1
+a99 1
+	#ifdef DEBUG
+d101 1
+a101 1
+	#endif
+d105 4
+a108 1
+		for(j=0;j<noofreg;j++)
+d116 1
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d8 1
+a8 1
+		
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d7 3
+a9 2
+{	
+
+d11 2
+d14 1
+d20 1
+d22 1
+d28 1
+d30 1
+d39 1
+d41 1
+d51 1
+d53 1
+d71 1
+d73 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d56 1
+a56 1
+		qset->data = kmalloc(sizeof(char *)*(noofreg),GFP_KERNEL);
+d65 1
+a65 1
+			qset[i].data = kmalloc(sizeof(char)*regsize,GFP_KERNEL);
+d69 1
+a69 1
+			memset(qset[i].data,'\0',sizeof(char)*regsize);	
+@

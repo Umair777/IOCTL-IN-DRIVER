@@ -1,0 +1,31 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2018.03.09.16.17.51;	author anmolzehra;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#include"header.h"
+#include"declarations.h"
+int Releasedev(struct inode *inodep,struct file *filep)
+{
+	printk(KERN_ALERT "Releasedev Begins\n");
+	printk(KERN_ALERT "Releasedev Ends\n");
+	return 0;
+}
+@

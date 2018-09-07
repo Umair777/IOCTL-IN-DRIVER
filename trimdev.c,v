@@ -1,0 +1,328 @@
+head	1.13;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.13
+date	2018.04.03.09.42.30;	author anmolzehra;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2018.03.30.11.03.46;	author anmolzehra;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2018.03.30.10.38.24;	author anmolzehra;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2018.03.30.10.34.11;	author anmolzehra;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2018.03.30.10.19.02;	author anmolzehra;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2018.03.30.10.17.15;	author anmolzehra;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.03.30.10.09.18;	author anmolzehra;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.03.30.10.07.23;	author anmolzehra;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.03.30.10.06.17;	author anmolzehra;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.03.30.09.54.40;	author anmolzehra;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.03.30.09.51.06;	author anmolzehra;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.03.30.09.47.38;	author anmolzehra;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.09.16.17.52;	author anmolzehra;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.13
+log
+@kfree and null implemented
+@
+text
+@#include"header.h"
+#include"declarations.h"
+int trimdev(Dev *ldev)
+{
+	Qset *last,*slast;
+	int j;
+	last = NULL;
+	slast = NULL;
+#ifdef DEBUG
+	printk(KERN_ALERT "trimdev Begins\n");
+#endif
+	if(!ldev)
+	{
+#ifdef DEBUG
+		printk(KERN_ERR "Device not found\n");
+#endif	
+	}
+	if(!ldev->first)
+	{
+#ifdef DEBUG
+		printk(KERN_ERR "No item found to trim\n");
+#endif	
+	}
+	else
+	{
+		last=slast=ldev->first;
+		while(ldev->first)
+		{
+			printk(KERN_INFO "==========\n");
+			last=slast=ldev->first;
+			while(last->next != NULL)
+			{
+				slast=last;
+				last=slast->next;	
+			}
+			if(last->data)
+			{
+			for(j=noofreg-1;j>=0;j--)
+			{
+				printk(KERN_INFO "j =%d\n",j);
+				kfree(last->data[j]);
+				last->data[j]=NULL;
+			}
+			kfree(last->data);
+			last->data=NULL;
+			}
+		}
+	}
+#ifdef DEBUG
+	printk(KERN_ALERT "trimdev Ends\n");
+#endif
+	return 0;
+}
+@
+
+
+1.12
+log
+@when the last item is left then if condition added
+@
+text
+@d6 1
+a6 1
+	int i,j;
+d15 1
+a15 1
+		printk(KERN_ERR "Error in ldev\n");
+d27 1
+a27 1
+		for(i=0;slast != NULL;i++)
+d36 2
+a37 2
+			if(last== NULL)
+				last=slast;
+d42 1
+d45 2
+a46 1
+			last=NULL;
+@
+
+
+1.11
+log
+@*** empty log message ***
+@
+text
+@d36 2
+@
+
+
+1.10
+log
+@*** empty log message ***
+@
+text
+@d27 1
+a27 1
+		for(i=0;slast->next != NULL;i++)
+d36 1
+a36 1
+			for(j=noofreg-1;j>=0;j++)
+@
+
+
+1.9
+log
+@*** empty log message ***
+@
+text
+@d36 1
+a36 1
+			for(j=0;j<noofreg;j++)
+d42 1
+a42 2
+			last=slast;
+			last->next=NULL;
+@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@d26 2
+a27 2
+		last=ldev->first;
+		for(i=0;last->next != NULL;i++)
+@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@d38 1
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d7 2
+a8 2
+	last=NULL;
+	slast=NULL;
+d26 1
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d8 1
+a8 1
+	last=NULL;
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d7 2
+a8 1
+	last=slast=NULL;
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d27 1
+@
+
+
+1.2
+log
+@trimming already written data
+@
+text
+@d8 1
+a8 1
+	#ifdef DEBUG
+d10 1
+a10 1
+	#endif
+d13 3
+a15 3
+	#ifdef DEBUG
+	printk(KERN_ERR "Error in ldev\n");
+	#endif	
+d19 3
+a21 3
+	#ifdef DEBUG
+	printk(KERN_ERR "No item found to trim\n");
+	#endif	
+d23 1
+a23 1
+	for(i=0;last->next != NULL;i++)
+d25 16
+a40 13
+	last=slast=ldev->first;
+	while(last->next != NULL)
+	{
+		slast=last;
+		last=slast->next;	
+	}
+	for(j=0;j<noofreg;j++)
+	{
+		kfree(last->data[j]);
+	}
+	kfree(last->data);
+	last=slast;
+	last->next=NULL;
+d42 1
+a42 1
+	#ifdef DEBUG
+d44 1
+a44 1
+	#endif
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 3
+d17 1
+a17 1
+	if(ldev->first)
+d20 1
+a20 1
+	printk(KERN_ERR "ldev->first\n");
+d22 16
+@

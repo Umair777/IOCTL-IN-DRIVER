@@ -1,0 +1,130 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2018.04.03.07.00.33;	author anmolzehra;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.04.03.06.28.18;	author anmolzehra;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.04.03.03.11.13;	author anmolzehra;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.04.03.03.06.26;	author anmolzehra;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.04.03.03.04.07;	author anmolzehra;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.29.12.25.15;	author anmolzehra;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@set regsize and noofreg
+@
+text
+@#ifndef MAGIC 
+#define MAGIC 't'
+#endif
+
+#ifndef GETREGSIZE
+#define GETREGSIZE _IOW(MAGIC,0,int)
+#endif
+
+#ifndef GETNOOFREG
+#define GETNOOFREG _IOW(MAGIC,1,int)
+#endif
+
+#ifndef GETDEVICESIZE
+#define GETDEVICESIZE _IOW(MAGIC,2,int)
+#endif
+
+#ifndef GETDATASIZE
+#define GETDATASIZE _IOW(MAGIC,3,int)
+#endif
+
+#ifndef SETREGSIZE
+#define SETREGSIZE _IOR(MAGIC,4,int)
+#endif
+
+#ifndef SETNOOFREG
+#define SETNOOFREG _IOW(MAGIC,5,int)
+#endif
+
+#ifndef DEVRESET
+#define DEVRESET _IO(MAGIC,9)
+#endif
+@
+
+
+1.5
+log
+@entered datasize devsize and noofreg options
+@
+text
+@d21 8
+@
+
+
+1.4
+log
+@corrected the type in getregsize command
+@
+text
+@d9 12
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d6 1
+a6 1
+#define GETREGSIZE _IOW(MAGIC,0,arg)
+@
+
+
+1.2
+log
+@made new entry of getregsize
+@
+text
+@d6 1
+a6 1
+#define GETREGSIZE _IOW(MAGIC,0)
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 4
+a11 1
+
+@

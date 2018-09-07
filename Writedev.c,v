@@ -1,0 +1,307 @@
+head	1.11;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.11
+date	2018.03.30.10.01.59;	author anmolzehra;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2018.03.30.09.59.39;	author anmolzehra;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2018.03.17.07.16.32;	author anmolzehra;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2018.03.17.06.02.45;	author anmolzehra;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.03.17.05.59.28;	author anmolzehra;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.03.17.05.09.55;	author anmolzehra;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.03.16.08.12.44;	author anmolzehra;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.03.10.08.00.49;	author anmolzehra;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.03.09.16.23.00;	author anmolzehra;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.03.09.16.20.07;	author anmolzehra;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.09.16.17.53;	author anmolzehra;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@*** empty log message ***
+@
+text
+@#include"header.h"
+#include"declarations.h"
+ssize_t Writedev(struct file *filep,const char __user *ubuff,size_t size,loff_t *offp)
+{
+	int write_beg_i,write_beg_qs,quantum,k;
+	int ret,noctw,nocsw,i;
+	Dev *ldev;
+	Qset *lqset;
+	size_t lsize;
+	loff_t offset;
+#ifdef DEBUG
+	printk(KERN_ALERT "Writedev Begins\n");
+#endif
+#ifdef DEBUG
+	printk(KERN_INFO "Offset is: %ld\n",(long int)*offp);
+#endif
+#ifdef DEBUG
+	printk(KERN_INFO "f_pos is: %ld\n",(long int)filep->f_pos);
+#endif
+	ldev=filep->private_data;	
+	if(!ldev)
+	{
+#ifdef DEBUG
+		printk(KERN_INFO "ldev failed\n");
+#endif
+	}
+	if(size>ldev->devsize)
+	{
+		lsize=ldev->devsize;	
+#ifdef DEBUG
+		printk(KERN_ERR "Partial writing of data will be done\n");
+#endif
+	}
+	else
+	{
+		lsize=size;
+	}
+	lqset=ldev->first=allocdev(lsize,filep->f_pos);
+	printk(KERN_INFO "Address of first item received by writedev is:%p\n",lqset);
+	offset=filep->f_pos;
+	write_beg_i=offset/(noofreg*regsize);
+	if(offset%(noofreg*regsize)!=0)
+	{
+		write_beg_i++;
+	}
+#ifdef DEBUG
+	printk(KERN_INFO "write_beg_i:%d\n",write_beg_i);
+#endif
+	write_beg_qs=offset/regsize;
+#ifdef DEBUG
+	printk(KERN_INFO "write_beg_qs:%d\n",write_beg_qs);
+#endif
+	for(k=0;k<write_beg_i;k++)
+	{
+		if(k==0)
+		{
+			lqset=ldev->first;
+		}
+		else
+		{
+			lqset=lqset->next;	
+		}
+	}
+	noctw=lsize;
+	nocsw=0;
+	quantum=(write_beg_qs+1)%noofreg;
+	i=quantum-1;
+	while(noctw)
+	{
+		if(noctw > ldev->regsize)
+		{
+			noctw=ldev->regsize;
+	}
+		ret=copy_from_user(lqset->data[i],ubuff+nocsw,noctw);	
+		if(ret)
+		{
+#ifdef DEBUG
+			printk(KERN_ERR "Partial writing taking place\n");
+#endif
+		}
+		printk(KERN_INFO "data written :%s\n",(char *)lqset->data[i]);
+		nocsw+=noctw-ret;
+		*offp=*offp+noctw-ret;
+		noctw=lsize-nocsw;
+		if(i == ldev->noofreg-1 )
+		{
+			lqset=lqset->next;
+			i=0;
+		}
+		else
+		{
+			i++;
+		}
+	}
+	ldev->datasize=nocsw;
+	filep->f_pos=*offp;
+#ifdef DEBUG
+	printk(KERN_INFO "Offset is: %ld\n",(long int)*offp);
+#endif
+#ifdef DEBUG
+	printk(KERN_INFO "f_pos is: %ld\n",(long int)filep->f_pos);
+#endif
+#ifdef DEBUG
+	printk(KERN_ALERT "Writedev Ends\n");
+#endif
+	return nocsw;
+}
+@
+
+
+1.10
+log
+@removed unnecessary printk statements
+@
+text
+@d81 1
+a81 1
+//		printk(KERN_INFO "data written :%s\n",(char *)lqset->data[i]);
+@
+
+
+1.9
+log
+@modification due to lseek offset
+@
+text
+@a73 1
+	printk(KERN_INFO "in while loop \n");
+a74 1
+	printk(KERN_INFO "in while loop \n");
+@
+
+
+1.8
+log
+@printing in while loop
+@
+text
+@d5 1
+d10 1
+d40 24
+d65 3
+a67 1
+	i=nocsw=0;
+d73 3
+a75 1
+		}
+a76 1
+		ret=copy_from_user(lqset->data[i],ubuff+nocsw,2);	
+@
+
+
+1.7
+log
+@cin copy from user wrote in place of noctw 2
+@
+text
+@d46 1
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d46 1
+a46 1
+		ret=copy_from_user(lqset->data[i],ubuff+nocsw,noctw);	
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d36 1
+a36 1
+	lqset=ldev->first=allocdev(lsize);
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d12 6
+d55 1
+d67 8
+a77 2
+
+	ldev->datasize=nocsw;
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d40 1
+a40 1
+		ret=copy_from_user(lqset[i].data,ubuff+nocsw,noctw);	
+d47 1
+a47 1
+		printk(KERN_INFO "data written :%s\n",(char *)lqset[i].data);
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d30 1
+a30 1
+/*	lqset=ldev->first=allocdev(lsize);
+d63 1
+a63 1
+*/
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d30 1
+a30 1
+	lqset=ldev->first=allocdev(lsize);
+d63 1
+@
